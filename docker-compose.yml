@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: mcp-database-mvp-app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/code/app
+      - ./requirements.txt:/code/requirements.txt
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MONGODB_URL=mongodb://mongo:27017
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6.0
+    container_name: mcp-database-mvp-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
