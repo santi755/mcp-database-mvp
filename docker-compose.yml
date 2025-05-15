@@ -2,16 +2,21 @@ version: "3.9"
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: mcp-database-mvp-app
     ports:
-      - "8000:80"
+      - "8000:8000"
     volumes:
       - ./app:/code/app
       - ./requirements.txt:/code/requirements.txt
+    working_dir: /code
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
-      - MONGODB_URL=mongodb://mongo:27017
     depends_on:
       - mongo
 
