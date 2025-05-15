@@ -3,7 +3,7 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    mongodb_url: str
+    mysql_url: str
     google_api_key: str
 
 
