@@ -11,6 +11,7 @@ services:
     volumes:
       - ./app:/code/app
       - ./requirements.txt:/code/requirements.txt
+      - ./data:/code/data
     working_dir: /code
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     env_file:
@@ -18,7 +19,36 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     depends_on:
+      - qdrant
       - mysql
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: mcp-database-mvp-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT_ALLOW_ANONYMOUS_API_KEY=true
+    restart: unless-stopped
+
+  mysql:
+    container_name: mcp-database-mvp-mysql
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=sakila
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
 volumes:
+  qdrant_data:
   mysql_data:
+
+networks:
+  default:

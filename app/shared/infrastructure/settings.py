@@ -5,6 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     mysql_url: str
     google_api_key: str
+    openai_api_key: str
 
 
 @lru_cache()

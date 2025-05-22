@@ -5,3 +5,12 @@ odmantic
 motor
 langchain
 langchain-google-genai
+langchain-openai
+langchain-core
+langchain-community
+sqlalchemy
+pymysql
+pandas
+openpyxl
+qdrant-client
+mysql-connector-python
