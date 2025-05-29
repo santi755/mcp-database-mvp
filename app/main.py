@@ -13,7 +13,7 @@ from app.database_interactor.infrastructure.fastapi.controller.post_convert_film
 from app.database_interactor.infrastructure.fastapi.controller.get_films_from_prompt import (
     router as get_films_from_prompt_router,
 )
-from app.database_interactor.infrastructure.fastapi.controller.get_films_from_promt_mysql import (
+from app.database_interactor.infrastructure.fastapi.controller.get_films_from_prompt_mysql import (
     router as get_films_from_promt_mysql_router,
 )
 from app.database_interactor.application.covert_films_to_vector_handler import (
@@ -27,18 +27,18 @@ from app.database_interactor.application.retrieve_films_from_natural_language im
 )
 from pydantic import BaseModel
 from app.shared.infrastructure.dependency_injection.container import setup_container
-from app.ai_context.infrastructure.controller import ai_context_router
+from app.ai_context.infrastructure.fastapi.controller import ai_context_router
+from app.database_interactor.infrastructure.fastapi.controller import (
+    database_interactor_router,
+)
 
 app = FastAPI()
 
 container = setup_container(app)
 setup_dishka(container, app)
 
-app.include_router(gemini_router)
-app.include_router(covert_films_to_vector_router)
-app.include_router(get_films_from_prompt_router)
-app.include_router(get_films_from_promt_mysql_router)
 app.include_router(ai_context_router)
+app.include_router(database_interactor_router)
 
 
 @app.on_event("startup")

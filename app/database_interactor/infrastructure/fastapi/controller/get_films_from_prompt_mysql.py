@@ -11,8 +11,8 @@ class LLMRequest(BaseModel):
     prompt: str
 
 
-@router.post("/films/from-mysql")
-async def get_films_from_promt_mysql(request: LLMRequest):
+@router.post("/from-mysql")
+async def get_films_from_prompt_mysql(request: LLMRequest):
     films_response = retrieve_films_from_prompt_mysql(request.prompt)
 
     return {"data": films_response}

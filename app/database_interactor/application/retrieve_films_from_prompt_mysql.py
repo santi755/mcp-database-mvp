@@ -3,8 +3,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAI
 
-from app.ai_context.infrastructure.llm_client.openai_llm_client import OpenAILLMClient
+import os
 
 
 SCHEMA_RELATIONSHIPS = {
@@ -109,7 +111,8 @@ def get_sql_chain(db):
 
     prompt = ChatPromptTemplate.from_template(template)
 
-    llm = OpenAILLMClient()
+    # llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = GoogleGenerativeAI(model="gemini-2.0-flash")
 
     def get_schema_with_relationships(_: dict) -> str:
         base_schema = db.get_table_info()
@@ -143,7 +146,8 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
 
     prompt = ChatPromptTemplate.from_template(template)
 
-    llm = OpenAILLMClient()
+    # llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = GoogleGenerativeAI(model="gemini-2.0-flash")
 
     chain = (
         RunnablePassthrough.assign(query=sql_chain).assign(
