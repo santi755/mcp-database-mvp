@@ -1,6 +1,7 @@
 from typing import Union
 from app.shared.infrastructure.settings import get_settings
 from qdrant_client import QdrantClient, models
+from dishka.integrations.fastapi import setup_dishka
 
 from fastapi import FastAPI, HTTPException
 from app.database_interactor.infrastructure.fastapi.controller.get_data_from_database import (
@@ -25,13 +26,19 @@ from app.database_interactor.application.retrieve_films_from_natural_language im
     retrieve_films_from_natural_language,
 )
 from pydantic import BaseModel
+from app.shared.infrastructure.dependency_injection.container import setup_container
+from app.ai_context.infrastructure.controller import ai_context_router
 
 app = FastAPI()
+
+container = setup_container(app)
+setup_dishka(container, app)
 
 app.include_router(gemini_router)
 app.include_router(covert_films_to_vector_router)
 app.include_router(get_films_from_prompt_router)
 app.include_router(get_films_from_promt_mysql_router)
+app.include_router(ai_context_router)
 
 
 @app.on_event("startup")

@@ -1,5 +1,5 @@
 from app.shared.infrastructure.settings import get_settings
-from app.database_interactor.infrastructure.gemini.gemini_generative_ai import (
+from app.database_interactor.infrastructure.llm.gemini.gemini_generative_ai import (
     get_gemini_client,
 )
 

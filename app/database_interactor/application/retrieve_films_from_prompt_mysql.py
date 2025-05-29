@@ -3,9 +3,69 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 
-import os
+from app.ai_context.infrastructure.llm_client.openai_llm_client import OpenAILLMClient
+
+
+SCHEMA_RELATIONSHIPS = {
+    # Film-related relationships
+    "film_relationships": [
+        # Actor relationships
+        "actor -> film_actor -> film",
+        "film -> film_actor -> actor",
+        # Category relationships
+        "film -> film_category -> category",
+        "category -> film_category -> film",
+        # Language relationship
+        "film -> language (language_id)",
+        # Inventory and rental relationships
+        "film -> inventory -> rental -> customer",
+        "customer -> rental -> inventory -> film",
+        # Store and staff relationships
+        "film -> inventory -> store -> staff",
+        "staff -> store -> inventory -> film",
+    ],
+    # Customer-related relationships
+    "customer_relationships": [
+        "customer -> rental -> inventory -> film",
+        "customer -> payment -> staff",
+        "customer -> payment -> rental",
+        "customer -> address -> city -> country",
+    ],
+    # Staff-related relationships
+    "staff_relationships": [
+        "staff -> store -> inventory -> film",
+        "staff -> payment -> customer",
+        "staff -> rental -> inventory -> film",
+        "staff -> address -> city -> country",
+    ],
+    # Store-related relationships
+    "store_relationships": [
+        "store -> inventory -> film",
+        "store -> staff",
+        "store -> customer -> rental -> inventory",
+    ],
+    # Address-related relationships
+    "address_relationships": [
+        "address -> city -> country",
+        "address -> customer",
+        "address -> staff",
+        "address -> store",
+    ],
+}
+
+
+def get_relationship_chains():
+    """
+    Returns a formatted string containing all relationship chains in the Sakila database.
+    """
+    chains = []
+    for category, relationships in SCHEMA_RELATIONSHIPS.items():
+        chains.append(f"\n{category.upper()}:")
+        for rel in relationships:
+            chains.append(f"-- {rel}")
+
+    return "\n".join(chains)
 
 
 def retrieve_films_from_prompt_mysql(question: str):
@@ -18,7 +78,7 @@ def retrieve_films_from_prompt_mysql(question: str):
 
 def get_database_connection():
     db = SQLDatabase.from_uri(
-        "mysql+mysqlconnector://root:root@mysqlDB:3306/sakila",
+        "mysql+mysqlconnector://root:root@mysql:3306/sakila",
         sample_rows_in_table_info=3,
     )
     return db
@@ -49,13 +109,19 @@ def get_sql_chain(db):
 
     prompt = ChatPromptTemplate.from_template(template)
 
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = OpenAILLMClient()
 
-    def get_schema(_):
-        return db.get_table_info()
+    def get_schema_with_relationships(_: dict) -> str:
+        base_schema = db.get_table_info()
+        relationships = get_relationship_chains()
+
+        return f"{base_schema}\n\n{relationships}"
 
     return (
-        RunnablePassthrough.assign(schema=get_schema, chat_history=lambda _: [])
+        RunnablePassthrough.assign(
+            schema=get_schema_with_relationships,
+            chat_history=lambda _: [],
+        )
         | prompt
         | llm
         | StrOutputParser()
@@ -77,7 +143,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
 
     prompt = ChatPromptTemplate.from_template(template)
 
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = OpenAILLMClient()
 
     chain = (
         RunnablePassthrough.assign(query=sql_chain).assign(
