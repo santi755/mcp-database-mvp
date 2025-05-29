@@ -3,9 +3,17 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    mysql_url: str
     google_api_key: str
     openai_api_key: str
+
+    db_driver: str
+    db_user: str
+    db_password: str
+    db_port: int
+    db_name: str
+    db_host: str
+
+    langchain_db_connection: str
 
 
 @lru_cache()
