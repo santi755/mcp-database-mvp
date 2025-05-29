@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.database_context.application.covert_films_to_vector_handler import (
+from app.embedding_context.application.covert_films_to_vector_handler import (
     covert_films_to_vector_handler,
 )
 
