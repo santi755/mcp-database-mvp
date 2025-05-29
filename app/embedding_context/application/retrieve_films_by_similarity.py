@@ -3,7 +3,7 @@ from langchain_openai import OpenAIEmbeddings
 from app.shared.infrastructure.settings import get_settings
 
 
-def retrieve_films_from_prompt(prompt: str):
+def retrieve_films_by_similarity(prompt: str):
     settings = get_settings()
     api_key = settings.openai_api_key
     if not api_key:

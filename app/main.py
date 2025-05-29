@@ -10,6 +10,9 @@ from app.ai_context.infrastructure.fastapi.controller import ai_context_router
 from app.database_context.infrastructure.fastapi.controller import (
     database_context_router,
 )
+from app.embedding_context.infrastructure.fastapi.controller import (
+    embedding_context_router,
+)
 
 app = FastAPI()
 
@@ -39,3 +42,4 @@ setup_dishka(container, app)
 # Setup routers
 app.include_router(ai_context_router)
 app.include_router(database_context_router)
+app.include_router(embedding_context_router)
