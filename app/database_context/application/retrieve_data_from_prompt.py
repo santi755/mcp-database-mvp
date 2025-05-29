@@ -70,7 +70,7 @@ def get_relationship_chains():
     return "\n".join(chains)
 
 
-def retrieve_films_from_prompt_mysql(question: str):
+def retrieve_data_from_prompt(question: str):
     db = get_database_connection()
 
     response = get_response(question, db, [])

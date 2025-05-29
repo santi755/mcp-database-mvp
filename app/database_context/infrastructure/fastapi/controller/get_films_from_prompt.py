@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.database_interactor.application.retrieve_films_from_prompt import (
+from app.database_context.application.retrieve_films_from_prompt import (
     retrieve_films_from_prompt,
 )
 

@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from app.shared.infrastructure.dependency_injection.container import setup_container
 from app.ai_context.infrastructure.fastapi.controller import ai_context_router
-from app.database_interactor.infrastructure.fastapi.controller import (
-    database_interactor_router,
+from app.database_context.infrastructure.fastapi.controller import (
+    database_context_router,
 )
 
 app = FastAPI()
@@ -38,4 +38,4 @@ setup_dishka(container, app)
 
 # Setup routers
 app.include_router(ai_context_router)
-app.include_router(database_interactor_router)
+app.include_router(database_context_router)
