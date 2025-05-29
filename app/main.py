@@ -14,11 +14,12 @@ from app.database_interactor.infrastructure.fastapi.controller import (
 app = FastAPI()
 
 
+# Setup Qdrant client
 @app.on_event("startup")
 async def startup_db_client():
     app.qdrant_client = QdrantClient(url="http://qdrant:6333")
 
-    # Crear colecciones si no existen
+    # Create collections if they don't exist
     collections = app.qdrant_client.get_collections().collections
     collection_names = [c.name for c in collections]
 
@@ -31,8 +32,10 @@ async def startup_db_client():
         )
 
 
+# Setup dishka dependencies
 container = setup_container(app)
 setup_dishka(container, app)
 
+# Setup routers
 app.include_router(ai_context_router)
 app.include_router(database_interactor_router)
